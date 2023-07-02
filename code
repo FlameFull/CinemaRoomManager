@@ -1,0 +1,80 @@
+package cinema
+import java.util.Scanner
+
+fun main() {
+    val scanner = Scanner(System.`in`)
+    println("Enter the number of rows:")
+    val rows = scanner.nextInt()
+    println("Enter the number of seats in each row:")
+    val seats = scanner.nextInt()
+    val list2D: MutableList<MutableList<String>> = mutableListOf()
+    for (i in 0..rows) {
+        if (i == 0) list2D.add(mutableListOf<String>(" ")) else list2D.add(mutableListOf<String>("$i"))
+        for (j in 1..seats) { if (i == 0) list2D[i].add(j.toString()) else list2D[i].add("S") }
+    }
+    val menu = """
+    1. Show the seats 
+    2. Buy a ticket
+    3. Statistics
+    0. Exit
+    """.trimIndent()
+    println()
+    println(menu)
+    println()
+    
+    var userInput = scanner.nextInt()
+    var ticketsPurchased = 0
+    var percentage = 0.0
+    var currentIncome = 0
+    val totalIncome = if (rows * seats > 60) rows / 2 * seats * 10 + (rows - rows / 2) * seats * 8 else rows * seats * 10
+    while (userInput != 0) {
+        when (userInput) {
+            1 -> {
+                println("Cinema:")
+                for (k in 0..rows) { println(list2D[k].joinToString(" ")) }
+                println()
+                println(menu)
+                println()
+                userInput = scanner.nextInt()
+            }
+            2 -> {
+                println("Enter a row number:")
+                var row = scanner.nextInt()
+                println("Enter a seat number in that row:")
+                var seat = scanner.nextInt()
+                while (row > rows || seat > seats) {
+                    println("Wrong input!\n")
+                    println("Enter a row number:")
+                    row = scanner.nextInt()
+                    println("Enter a seat number in that row:")
+                    seat = scanner.nextInt()
+                }
+                while (list2D[row][seat] == "B") {
+                    println("That ticket has already been purchased!\n")
+                    println("Enter a row number:")
+                    row = scanner.nextInt()
+                    println("Enter a seat number in that row:")
+                    seat = scanner.nextInt()
+                }
+                list2D[row][seat] = "B"
+                ticketsPurchased++
+                percentage = ticketsPurchased.toDouble() / (rows * seats) * 100
+                val ticketPrice = if (rows * seats > 60 && rows / 2 < row) "8" else "10"
+                currentIncome += ticketPrice.toInt()
+                println("Ticket price: $$ticketPrice")
+                println()
+                println(menu)
+                println()
+                userInput = scanner.nextInt()
+            }
+            3 -> {
+                val formatPercentage = "%.2f".format(percentage)
+                println("Number of purchased tickets: $ticketsPurchased")
+                println("Percentage: $formatPercentage%")
+                println("Current income: $$currentIncome")
+                println("Total income: $$totalIncome")
+                userInput = scanner.nextInt()
+            }
+        }
+    }
+}
